@@ -1,0 +1,73 @@
+{
+  "projects": [
+    {
+      "id": "proj-1",
+      "name": "Production Environment",
+      "description": "Main production workloads"
+    },
+    {
+      "id": "proj-2",
+      "name": "Development Environment",
+      "description": "Development and testing workloads"
+    }
+  ],
+  "clusters": [
+    {
+      "id": "c-1",
+      "name": "production-cluster",
+      "projectId": "proj-1",
+      "region": "us-east-1",
+      "version": "1.28.0",
+      "nodeCount": 5,
+      "status": "running",
+      "labels": {
+        "environment": "production",
+        "team": "platform"
+      },
+      "createdAt": "2024-01-15T10:00:00Z",
+      "updatedAt": "2024-01-15T10:00:00Z"
+    },
+    {
+      "id": "c-2",
+      "name": "staging-cluster",
+      "projectId": "proj-1",
+      "region": "us-west-2",
+      "version": "1.27.3",
+      "nodeCount": 3,
+      "status": "running",
+      "labels": {
+        "environment": "staging",
+        "team": "development"
+      },
+      "createdAt": "2024-01-20T14:30:00Z",
+      "updatedAt": "2024-01-20T14:30:00Z"
+    },
+    {
+      "id": "c-3",
+      "name": "dev-cluster",
+      "projectId": "proj-2",
+      "region": "eu-central-1",
+      "version": "1.28.0",
+      "nodeCount": 2,
+      "status": "pending",
+      "labels": {
+        "environment": "development",
+        "team": "development"
+      },
+      "createdAt": "2024-02-01T09:15:00Z",
+      "updatedAt": "2024-02-01T09:15:00Z"
+    },
+    {
+      "name": "test-cluster",
+      "region": "us-west-2",
+      "version": "1.28.0",
+      "nodeCount": 3,
+      "labels": {},
+      "projectId": "proj-1",
+      "status": "pending",
+      "id": "cluster-1761724154292-aiqki5tiv",
+      "createdAt": "2025-10-29T07:49:14.292Z",
+      "updatedAt": "2025-10-29T07:49:14.292Z"
+    }
+  ]
+}

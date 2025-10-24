@@ -1,0 +1,22 @@
+[
+  {
+    "version": "1.28.0",
+    "isDefault": true,
+    "supportStatus": "stable"
+  },
+  {
+    "version": "1.27.8",
+    "isDefault": false,
+    "supportStatus": "stable"
+  },
+  {
+    "version": "1.27.3",
+    "isDefault": false,
+    "supportStatus": "deprecated"
+  },
+  {
+    "version": "1.26.12",
+    "isDefault": false,
+    "supportStatus": "deprecated"
+  }
+]
