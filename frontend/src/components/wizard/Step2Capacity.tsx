@@ -50,6 +50,9 @@ export function Step2Capacity({ formData, onChange }: Step2CapacityProps) {
 
     setLabelKey('');
     setLabelValue('');
+
+    setLabelKey('');
+    setLabelValue('');
   };
 
   const handleRemoveLabel = (key: string) => {
