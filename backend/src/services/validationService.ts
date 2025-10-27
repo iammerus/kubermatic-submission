@@ -44,10 +44,10 @@ export class ValidationService {
     if (!isUpdate && clusterData.nodeCount === undefined) {
       errors.push({ field: 'nodeCount', message: 'Node count is required' });
     } else if (clusterData.nodeCount !== undefined) {
-      if (clusterData.nodeCount < 1 || clusterData.nodeCount > 100) {
+      if (!Number.isInteger(clusterData.nodeCount) || clusterData.nodeCount < 1 || clusterData.nodeCount > 100) {
         errors.push({ 
           field: 'nodeCount', 
-          message: 'Node count must be between 1 and 100' 
+          message: 'Node count must be an integer between 1 and 100' 
         });
       }
     }
