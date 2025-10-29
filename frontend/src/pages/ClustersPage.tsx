@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -22,6 +22,7 @@ import { Layout } from '../components/Layout';
 import { ClusterCard } from '../components/ClusterCard';
 import { EditClusterDialog } from '../components/EditClusterDialog';
 import { DeleteConfirmDialog } from '../components/DeleteConfirmDialog';
+import { useWebSocket } from '../hooks/useWebSocket';
 import { clustersApi, projectsApi, referenceApi } from '../services/api';
 import type { Cluster, Version } from '../types';
 
@@ -39,6 +40,37 @@ export function ClustersPage() {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedCluster, setSelectedCluster] = useState<Cluster | null>(null);
+
+  const handleClusterCreated = useCallback((cluster: Cluster) => {
+    if (cluster.projectId === projectId) {
+      setClusters((prev) => [...prev, cluster]);
+    }
+  }, [projectId]);
+
+  const handleClusterUpdated = useCallback((cluster: Cluster) => {
+    if (cluster.projectId === projectId) {
+      setClusters((prev) =>
+        prev.map((c) => (c.id === cluster.id ? cluster : c))
+      );
+    }
+  }, [projectId]);
+
+  const handleClusterDeleted = useCallback((clusterId: string) => {
+    setClusters((prev) => prev.filter((c) => c.id !== clusterId));
+  }, []);
+
+  const handleClusterStatusChange = useCallback((data: { clusterId: string; status: Cluster['status'] }) => {
+    setClusters((prev) =>
+      prev.map((c) => (c.id === data.clusterId ? { ...c, status: data.status } : c))
+    );
+  }, []);
+
+  useWebSocket({
+    onClusterCreated: handleClusterCreated,
+    onClusterUpdated: handleClusterUpdated,
+    onClusterDeleted: handleClusterDeleted,
+    onClusterStatus: handleClusterStatusChange,
+  });
 
   useEffect(() => {
     if (projectId) {
@@ -122,7 +154,6 @@ export function ClustersPage() {
   const handleSaveEdit = async (clusterId: string, updates: Partial<Cluster>) => {
     try {
       await clustersApi.update(clusterId, updates);
-      await loadClusters();
       setEditDialogOpen(false);
     } catch (err: any) {
       setError(err.response?.data?.error?.message || 'Failed to update cluster');
@@ -133,7 +164,6 @@ export function ClustersPage() {
   const handleConfirmDelete = async (clusterId: string) => {
     try {
       await clustersApi.delete(clusterId);
-      await loadClusters();
       setDeleteDialogOpen(false);
     } catch (err: any) {
       setError(err.response?.data?.error?.message || 'Failed to delete cluster');

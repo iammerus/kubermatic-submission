@@ -1,6 +1,8 @@
 import { Router, Response } from 'express';
 import { dataService } from '../services/dataService.js';
 import { validationService } from '../services/validationService.js';
+import { websocketService } from '../services/websocketService.js';
+import { clusterSimulator } from '../services/clusterSimulator.js';
 import { authMiddleware, AuthRequest } from '../middleware/auth.js';
 import { Cluster } from '../types/index.js';
 
@@ -53,6 +55,8 @@ router.post('/projects/:projectId/clusters', authMiddleware, async (req: AuthReq
       status: 'pending' as const,
     });
 
+    websocketService.broadcastClusterCreated(newCluster);
+    clusterSimulator.simulateClusterProvisioning(newCluster.id);
     res.status(201).json(newCluster);
   } catch (error) {
     res.status(500).json({ 
@@ -94,6 +98,7 @@ router.put('/clusters/:clusterId', authMiddleware, async (req: AuthRequest, res:
 
     // Update cluster
     const updatedCluster = await dataService.updateCluster(clusterId, updates);
+    websocketService.broadcastClusterUpdate(updatedCluster);
     res.json(updatedCluster);
   } catch (error) {
     res.status(500).json({ 
@@ -117,6 +122,7 @@ router.delete('/clusters/:clusterId', authMiddleware, async (req: AuthRequest, r
     }
 
     await dataService.deleteCluster(clusterId);
+    websocketService.broadcastClusterDeleted(clusterId);
     res.status(204).send();
   } catch (error) {
     res.status(500).json({ 

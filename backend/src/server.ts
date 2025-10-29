@@ -1,4 +1,5 @@
 import express from 'express';
+import { createServer } from 'http';
 import cors from 'cors';
 import authRoutes from './routes/auth.js';
 import projectsRoutes from './routes/projects.js';
@@ -7,8 +8,10 @@ import referenceRoutes from './routes/reference.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { authService } from './services/authService.js';
 import { dataService } from './services/dataService.js';
+import { websocketService } from './services/websocketService.js';
 
 const app = express();
+const httpServer = createServer(app);
 const PORT = process.env.PORT || 3001;
 
 // Middleware
@@ -37,9 +40,12 @@ async function startServer() {
     await authService.loadUsers();
     await dataService.loadData();
     
-    app.listen(PORT, () => {
+    websocketService.initialize(httpServer);
+    
+    httpServer.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
       console.log(`API available at http://localhost:${PORT}/api`);
+      console.log(`WebSocket available at ws://localhost:${PORT}`);
     });
   } catch (error) {
     console.error('Failed to start server:', error);
