@@ -38,8 +38,8 @@ async function startServer() {
     await dataService.loadData();
     
     app.listen(PORT, () => {
-      console.log(`🚀 Server running on port ${PORT}`);
-      console.log(`📊 API available at http://localhost:${PORT}/api`);
+      console.log(`Server running on port ${PORT}`);
+      console.log(`API available at http://localhost:${PORT}/api`);
     });
   } catch (error) {
     console.error('Failed to start server:', error);

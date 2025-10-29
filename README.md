@@ -5,16 +5,16 @@ A full-stack web application for simulating the creation and management of Kuber
 ## Features
 
 ### Implemented
-- ✅ User authentication with JWT tokens
-- ✅ Protected routes and session management
-- ✅ Projects list page with search functionality
-- ✅ Clusters list page with sorting and filtering
-- ✅ Multi-step cluster creation wizard
-- ✅ Edit cluster functionality (version, node count, labels)
-- ✅ Delete cluster with confirmation dialog
-- ✅ Status indicators for cluster states
-- ✅ Dockerized frontend and backend
-- ✅ File-based data persistence
+- User authentication with JWT tokens
+- Protected routes and session management
+- Projects list page with search functionality
+- Clusters list page with sorting and filtering
+- Multi-step cluster creation wizard
+- Edit cluster functionality (version, node count, labels)
+- Delete cluster with confirmation dialog
+- Status indicators for cluster states
+- Dockerized frontend and backend
+- File-based data persistence
 
 ## Tech Stack
 
