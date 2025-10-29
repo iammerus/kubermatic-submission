@@ -1,4 +1,5 @@
 import fs from 'fs/promises';
+import { watch } from 'fs';
 import path from 'path';
 import { Database, Cluster, Project, Region, Version } from '../types/index.js';
 
@@ -7,6 +8,9 @@ class DataService {
   private db: Database = { projects: [], clusters: [] };
   private regions: Region[] = [];
   private versions: Version[] = [];
+  private fileWatcher: ReturnType<typeof watch> | null = null;
+  private onDataChangeCallback: ((previousClusters: Cluster[], newClusters: Cluster[]) => void) | null = null;
+  private isInternalChange = false;
 
   constructor() {
     this.dbPath = path.join(process.cwd(), 'mock', 'db.json');
@@ -36,8 +40,50 @@ class DataService {
     }
   }
 
+  startWatching() {
+    if (this.fileWatcher) {
+      return;
+    }
+
+    this.fileWatcher = watch(this.dbPath, async (eventType) => {
+      if (eventType === 'change' && !this.isInternalChange) {
+        console.log('External database file change detected, reloading...');
+        const previousClusters = [...this.db.clusters];
+        
+        try {
+          const dbData = await fs.readFile(this.dbPath, 'utf-8');
+          this.db = JSON.parse(dbData);
+          
+          if (this.onDataChangeCallback) {
+            this.onDataChangeCallback(previousClusters, this.db.clusters);
+          }
+        } catch (error) {
+          console.error('Error reloading data:', error);
+        }
+      }
+    });
+
+    console.log('File watching started for:', this.dbPath);
+  }
+
+  stopWatching() {
+    if (this.fileWatcher) {
+      this.fileWatcher.close();
+      this.fileWatcher = null;
+      console.log('File watching stopped');
+    }
+  }
+
+  onDataChange(callback: (previousClusters: Cluster[], newClusters: Cluster[]) => void) {
+    this.onDataChangeCallback = callback;
+  }
+
   private async saveData(): Promise<void> {
+    this.isInternalChange = true;
     await fs.writeFile(this.dbPath, JSON.stringify(this.db, null, 2));
+    setTimeout(() => {
+      this.isInternalChange = false;
+    }, 100);
   }
 
   private generateId(prefix: string): string {

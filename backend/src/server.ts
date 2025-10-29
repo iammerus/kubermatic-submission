@@ -42,6 +42,12 @@ async function startServer() {
     
     websocketService.initialize(httpServer);
     
+    // Watch for external file changes and broadcast via WebSocket
+    dataService.onDataChange((previousClusters, newClusters) => {
+      websocketService.handleExternalDataChange(previousClusters, newClusters);
+    });
+    dataService.startWatching();
+    
     httpServer.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
       console.log(`API available at http://localhost:${PORT}/api`);

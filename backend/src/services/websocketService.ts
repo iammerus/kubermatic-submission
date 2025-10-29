@@ -22,6 +22,37 @@ class WebSocketService {
     });
   }
 
+  handleExternalDataChange(previousClusters: Cluster[], newClusters: Cluster[]) {
+    const previousMap = new Map(previousClusters.map(c => [c.id, c]));
+    const newMap = new Map(newClusters.map(c => [c.id, c]));
+
+    // Detect created clusters
+    newClusters.forEach(cluster => {
+      if (!previousMap.has(cluster.id)) {
+        this.broadcastClusterCreated(cluster);
+      }
+    });
+
+    // Detect updated clusters
+    newClusters.forEach(cluster => {
+      const previous = previousMap.get(cluster.id);
+      if (previous && JSON.stringify(previous) !== JSON.stringify(cluster)) {
+        this.broadcastClusterUpdate(cluster);
+        
+        if (previous.status !== cluster.status) {
+          this.broadcastClusterStatusChange(cluster.id, cluster.status);
+        }
+      }
+    });
+
+    // Detect deleted clusters
+    previousClusters.forEach(cluster => {
+      if (!newMap.has(cluster.id)) {
+        this.broadcastClusterDeleted(cluster.id);
+      }
+    });
+  }
+
   broadcastClusterUpdate(cluster: Cluster) {
     if (this.io) {
       this.io.emit('cluster:updated', cluster);

@@ -64,10 +64,22 @@
       "nodeCount": 3,
       "labels": {},
       "projectId": "proj-1",
-      "status": "pending",
+      "status": "runnign",
       "id": "cluster-1761724154292-aiqki5tiv",
       "createdAt": "2025-10-29T07:49:14.292Z",
       "updatedAt": "2025-10-29T07:49:14.292Z"
+    },
+    {
+      "name": "test-cluster-2",
+      "region": "us-west-2",
+      "version": "1.28.0",
+      "nodeCount": 3,
+      "labels": {},
+      "projectId": "proj-1",
+      "status": "running",
+      "id": "cluster-1761727100244-6ufslaz7d",
+      "createdAt": "2025-10-29T08:38:20.244Z",
+      "updatedAt": "2025-10-29T08:38:25.250Z"
     }
   ]
 }
