@@ -5,26 +5,21 @@ import {
   Typography,
   Button,
   TextField,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
   IconButton,
   CircularProgress,
   Alert,
   InputAdornment,
-  TableSortLabel,
+  Grid,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
 import SearchIcon from '@mui/icons-material/Search';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Layout } from '../components/Layout';
-import { StatusIcon } from '../components/StatusIcon';
+import { ClusterCard } from '../components/ClusterCard';
 import { EditClusterDialog } from '../components/EditClusterDialog';
 import { DeleteConfirmDialog } from '../components/DeleteConfirmDialog';
 import { clustersApi, projectsApi, referenceApi } from '../services/api';
@@ -108,9 +103,7 @@ export function ClustersPage() {
     setFilteredClusters(sorted);
   };
 
-  const handleSort = () => {
-    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-  };
+
 
   const handleCreateCluster = () => {
     navigate(`/projects/${projectId}/clusters/new`);
@@ -190,6 +183,17 @@ export function ClustersPage() {
               ),
             }}
           />
+          <FormControl sx={{ minWidth: 150 }}>
+            <InputLabel>Sort By</InputLabel>
+            <Select
+              value={sortOrder}
+              label="Sort By"
+              onChange={(e) => setSortOrder(e.target.value as 'asc' | 'desc')}
+            >
+              <MenuItem value="asc">Name (A-Z)</MenuItem>
+              <MenuItem value="desc">Name (Z-A)</MenuItem>
+            </Select>
+          </FormControl>
           <Button
             variant="contained"
             startIcon={<AddIcon />}
@@ -199,57 +203,17 @@ export function ClustersPage() {
           </Button>
         </Box>
 
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Status</TableCell>
-                <TableCell>
-                  <TableSortLabel
-                    active
-                    direction={sortOrder}
-                    onClick={handleSort}
-                  >
-                    Name
-                  </TableSortLabel>
-                </TableCell>
-                <TableCell>Region</TableCell>
-                <TableCell>Version</TableCell>
-                <TableCell>Node Count</TableCell>
-                <TableCell align="right">Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredClusters.map((cluster) => (
-                <TableRow key={cluster.id} hover>
-                  <TableCell>
-                    <StatusIcon status={cluster.status} />
-                  </TableCell>
-                  <TableCell>{cluster.name}</TableCell>
-                  <TableCell>{cluster.region}</TableCell>
-                  <TableCell>{cluster.version}</TableCell>
-                  <TableCell>{cluster.nodeCount}</TableCell>
-                  <TableCell align="right">
-                    <IconButton
-                      size="small"
-                      onClick={() => handleEdit(cluster)}
-                      color="primary"
-                    >
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton
-                      size="small"
-                      onClick={() => handleDelete(cluster)}
-                      color="error"
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <Grid container spacing={3}>
+          {filteredClusters.map((cluster) => (
+            <Grid item xs={12} sm={6} md={4} key={cluster.id}>
+              <ClusterCard
+                cluster={cluster}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+              />
+            </Grid>
+          ))}
+        </Grid>
 
         {filteredClusters.length === 0 && !loading && (
           <Box textAlign="center" py={8}>
